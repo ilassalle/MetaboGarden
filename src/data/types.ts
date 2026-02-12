@@ -104,6 +104,7 @@ export interface EnergySummary {
   atpConsumed: number;
   atpProduced: number;
   gtpProduced?: number;
+  nadphConsumed?: number;
   nadhProduced: number;
   fadh2Produced: number;
   netAtp: number;

@@ -143,6 +143,9 @@ export default function InteractiveDiagram({ pathway }: InteractiveDiagramProps)
           {energySummary.gtpProduced !== undefined && energySummary.gtpProduced > 0 && (
             <SummaryRow label="GTP produced" value={energySummary.gtpProduced} />
           )}
+          {energySummary.nadphConsumed !== undefined && energySummary.nadphConsumed > 0 && (
+            <SummaryRow label="NADPH consumed" value={energySummary.nadphConsumed} />
+          )}
           <SummaryRow label="NADH produced" value={energySummary.nadhProduced} />
           <SummaryRow label="FADH2 produced" value={energySummary.fadh2Produced} />
           {energySummary.co2Produced !== undefined && energySummary.co2Produced > 0 && (
