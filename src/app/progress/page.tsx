@@ -2,44 +2,66 @@
 
 import { pathwayRegistry } from '@/data/pathway-registry';
 import { useProgressStore } from '@/lib/progress-store';
-import { SeedlingIcon, LeafIcon } from '@/components/layout/PlantDecoration';
+import { LeafIcon } from '@/components/layout/PlantDecoration';
 
 function PlantGrowth({ mastery }: { mastery: number }) {
-  if (mastery >= 80) {
+  if (mastery >= 100) {
     return (
-      <div className="text-green-500">
-        <svg viewBox="0 0 40 60" className="w-10 h-15 mx-auto" fill="none">
-          <path d="M20 55V25" stroke="currentColor" strokeWidth={2} />
-          <path d="M20 35c-8-2-12-10-10-18 4 4 10 6 10 6s6-2 10-6c2 8-2 16-10 18z" fill="currentColor" opacity={0.7} />
-          <path d="M20 25c-5-1-8-7-6-13 3 3 6 4 6 4s4-1 6-4c2 6-1 12-6 13z" fill="currentColor" opacity={0.8} />
-          <circle cx="14" cy="20" r="3" fill="#fb7185" opacity={0.8} />
-          <circle cx="26" cy="22" r="2.5" fill="#fbbf24" opacity={0.8} />
-          <circle cx="20" cy="15" r="2" fill="#a78bfa" opacity={0.8} />
+      <div className="text-emerald-500" aria-label="Full flower">
+        <svg viewBox="0 0 48 64" className="w-11 h-16 mx-auto" fill="none">
+          <path d="M24 58V30" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" />
+          <ellipse cx="24" cy="22" rx="7" ry="11" fill="#f472b6" opacity={0.95} />
+          <ellipse cx="17" cy="25" rx="6" ry="9" fill="#fb7185" opacity={0.9} />
+          <ellipse cx="31" cy="25" rx="6" ry="9" fill="#fbbf24" opacity={0.9} />
+          <ellipse cx="24" cy="28" rx="6" ry="8" fill="#facc15" opacity={0.95} />
+          <circle cx="24" cy="25" r="3.2" fill="#fde047" />
+          <path d="M24 41c-4.5-1.1-7.1-4.8-6.2-8.5 3 1.3 6.2 3.6 6.2 3.6s3.2-2.3 6.2-3.6c0.9 3.7-1.7 7.4-6.2 8.5z" fill="currentColor" opacity={0.5} />
         </svg>
       </div>
     );
   }
-  if (mastery >= 40) {
+
+  if (mastery >= 75) {
     return (
-      <div className="text-green-400">
-        <svg viewBox="0 0 40 60" className="w-10 h-15 mx-auto" fill="none">
-          <path d="M20 55V30" stroke="currentColor" strokeWidth={2} />
-          <path d="M20 40c-6-1.5-9-8-7-14 3 3 7 5 7 5s4-2 7-5c2 6-1 12.5-7 14z" fill="currentColor" opacity={0.6} />
-          <path d="M20 30c-4-1-6-5-4-10 2 2 4 3 4 3s3-1 4-3c1 5-1 9-4 10z" fill="currentColor" opacity={0.7} />
+      <div className="text-emerald-500" aria-label="Budding flower">
+        <svg viewBox="0 0 48 64" className="w-11 h-16 mx-auto" fill="none">
+          <path d="M24 58V32" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" />
+          <path d="M24 32c-5-1.2-8-6.7-6.3-12.4 3 1.8 6.3 4.7 6.3 4.7s3.3-2.9 6.3-4.7c1.7 5.7-1.3 11.2-6.3 12.4z" fill="#f472b6" opacity={0.9} />
+          <path d="M24 42c-4-1-6.5-4.2-5.7-7.5 2.8 1.2 5.7 3.2 5.7 3.2s2.9-2 5.7-3.2c0.8 3.3-1.7 6.5-5.7 7.5z" fill="currentColor" opacity={0.45} />
         </svg>
       </div>
     );
   }
-  if (mastery > 0) {
+
+  if (mastery >= 50) {
     return (
-      <div className="text-green-300">
-        <SeedlingIcon className="w-10 h-10 mx-auto" />
+      <div className="text-emerald-500" aria-label="Leaves stage">
+        <svg viewBox="0 0 48 64" className="w-11 h-16 mx-auto" fill="none">
+          <path d="M24 58V34" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" />
+          <path d="M24 42c-8-1.5-12.8-7.8-11.3-14.5 4 1.6 8.5 5.2 11.3 7.9 2.8-2.7 7.3-6.3 11.3-7.9 1.5 6.7-3.3 13-11.3 14.5z" fill="currentColor" opacity={0.55} />
+          <path d="M24 41c-6-1.1-9.2-5.5-8.2-10 2.9 1.2 6.2 3.6 8.2 5.7 2-2.1 5.3-4.5 8.2-5.7 1 4.5-2.2 8.9-8.2 10z" fill="currentColor" opacity={0.75} />
+        </svg>
       </div>
     );
   }
+
+  if (mastery >= 25) {
+    return (
+      <div className="text-green-400" aria-label="Bigger sprout">
+        <svg viewBox="0 0 48 64" className="w-11 h-16 mx-auto" fill="none">
+          <path d="M24 58V38" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" />
+          <path d="M24 44c-7-1.6-10.5-7.8-8.8-13.2 3.5 2 6.8 5.2 8.8 7.6 2-2.4 5.3-5.6 8.8-7.6 1.7 5.4-1.8 11.6-8.8 13.2z" fill="currentColor" opacity={0.65} />
+        </svg>
+      </div>
+    );
+  }
+
   return (
-    <div className="text-green-200">
-      <div className="w-4 h-4 rounded-full bg-current mx-auto opacity-50" />
+    <div className="text-green-300" aria-label="Small sprout">
+      <svg viewBox="0 0 48 64" className="w-11 h-16 mx-auto" fill="none">
+        <path d="M24 58V44" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" />
+        <path d="M24 49c-4.8-1.1-7.3-5.3-6.2-9 2.5 1.4 4.8 3.8 6.2 5.6 1.4-1.8 3.7-4.2 6.2-5.6 1.1 3.7-1.4 7.9-6.2 9z" fill="currentColor" opacity={0.6} />
+      </svg>
     </div>
   );
 }

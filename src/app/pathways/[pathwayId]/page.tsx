@@ -106,6 +106,7 @@ export default function PathwayLanding({
   const { pathway, loading } = usePathwayData(typedPathwayId);
   const unlockPathway = useProgressStore((s) => s.unlockPathway);
   const unlockDiagram = useProgressStore((s) => s.unlockDiagram);
+  const updateGameProgress = useProgressStore((s) => s.updateGameProgress);
 
   const pathwayUnlocked = useProgressStore((s) =>
     s.progress.unlockedPathways.includes(typedPathwayId)
@@ -119,6 +120,18 @@ export default function PathwayLanding({
 
   const basePath = `/pathways/${pathwayId}`;
   const needToKnow = pathway ? buildNeedToKnow(pathway) : null;
+
+  const markCardVisited = (gameMode: 'diagram' | 'pathway-builder' | 'quiz' | 'matching') => {
+    updateGameProgress({
+      pathwayId: typedPathwayId,
+      gameMode,
+      score: 100,
+      bestScore: 100,
+      attempts: 1,
+      timeSpentSeconds: 0,
+      completedAt: new Date().toISOString(),
+    });
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
@@ -204,6 +217,7 @@ export default function PathwayLanding({
           description="Explore each step of the pathway with detailed info, animations, and energy diagrams."
           icon={<DiagramIcon />}
           locked={!canAccessDiagram}
+          onClick={() => markCardVisited('diagram')}
         />
         <GameModeCard
           href={`${basePath}/pathway-builder`}
@@ -212,6 +226,7 @@ export default function PathwayLanding({
           icon={<DragIcon />}
           locked={!canAccessOtherModes}
           lockedLabel={pathwayUnlocked ? 'Locked - Explore Interactive Diagram First' : 'Locked'}
+          onClick={() => markCardVisited('pathway-builder')}
         />
         <GameModeCard
           href={`${basePath}/quiz`}
@@ -220,6 +235,7 @@ export default function PathwayLanding({
           icon={<QuizIcon />}
           locked={!canAccessOtherModes}
           lockedLabel={pathwayUnlocked ? 'Locked - Explore Interactive Diagram First' : 'Locked'}
+          onClick={() => markCardVisited('quiz')}
         />
         <GameModeCard
           href={`${basePath}/matching`}
@@ -228,6 +244,7 @@ export default function PathwayLanding({
           icon={<MatchIcon />}
           locked={!canAccessOtherModes}
           lockedLabel={pathwayUnlocked ? 'Locked - Explore Interactive Diagram First' : 'Locked'}
+          onClick={() => markCardVisited('matching')}
         />
       </div>
     </div>

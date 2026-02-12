@@ -8,9 +8,10 @@ interface GameModeCardProps {
   bestScore?: number;
   locked?: boolean;
   lockedLabel?: string;
+  onClick?: () => void;
 }
 
-export default function GameModeCard({ href, title, description, icon, bestScore, locked = false, lockedLabel = 'Locked' }: GameModeCardProps) {
+export default function GameModeCard({ href, title, description, icon, bestScore, locked = false, lockedLabel = 'Locked', onClick }: GameModeCardProps) {
   if (locked) {
     return (
       <div className="group bg-green-50/50 rounded-2xl border border-green-200 p-6 h-full flex flex-col opacity-80">
@@ -28,7 +29,7 @@ export default function GameModeCard({ href, title, description, icon, bestScore
   }
 
   return (
-    <Link href={href}>
+    <Link href={href} onClick={onClick}>
       <div className="group bg-white rounded-2xl border border-green-200 p-6 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 transition-all duration-300 cursor-pointer h-full flex flex-col">
         <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors text-green-600">
           {icon}
