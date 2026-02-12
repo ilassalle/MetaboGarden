@@ -104,12 +104,15 @@ export default function PathwayLanding({
 
   const typedPathwayId = pathwayId as PathwayId;
   const { pathway, loading } = usePathwayData(typedPathwayId);
-  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
-  const isDiagramUnlocked = useProgressStore((s) => s.isDiagramUnlocked);
   const unlockPathway = useProgressStore((s) => s.unlockPathway);
+  const unlockDiagram = useProgressStore((s) => s.unlockDiagram);
 
-  const pathwayUnlocked = isPathwayUnlocked(typedPathwayId);
-  const diagramUnlocked = isDiagramUnlocked(typedPathwayId);
+  const pathwayUnlocked = useProgressStore((s) =>
+    s.progress.unlockedPathways.includes(typedPathwayId)
+  );
+  const diagramUnlocked = useProgressStore((s) =>
+    s.progress.diagramUnlockedPathways.includes(typedPathwayId)
+  );
 
   const canAccessDiagram = pathwayUnlocked && diagramUnlocked;
   const canAccessOtherModes = pathwayUnlocked && diagramUnlocked;
@@ -182,11 +185,11 @@ export default function PathwayLanding({
             <button
               onClick={() => {
                 unlockPathway(typedPathwayId);
-                useProgressStore.getState().unlockDiagram(typedPathwayId);
+                unlockDiagram(typedPathwayId);
               }}
               className="inline-flex items-center justify-center rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2"
             >
-              Start growing
+              Start learning
             </button>
           ) : (
             <p className="text-sm text-green-700/80 font-medium">Pathway unlocked — revisit this summary anytime.</p>
