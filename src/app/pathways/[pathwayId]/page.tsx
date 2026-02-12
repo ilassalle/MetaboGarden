@@ -107,7 +107,6 @@ export default function PathwayLanding({
   const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
   const isDiagramUnlocked = useProgressStore((s) => s.isDiagramUnlocked);
   const unlockPathway = useProgressStore((s) => s.unlockPathway);
-  const unlockDiagram = useProgressStore((s) => s.unlockDiagram);
 
   const pathwayUnlocked = isPathwayUnlocked(typedPathwayId);
   const diagramUnlocked = isDiagramUnlocked(typedPathwayId);
@@ -146,19 +145,17 @@ export default function PathwayLanding({
 
       {!pathwayUnlocked && (
         <div className="bg-white rounded-2xl border border-green-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-green-900 mb-3">Unlock this pathway</h2>
-
           {loading && <p className="text-sm text-green-600/70">Loading pathway overview...</p>}
 
           {pathway && needToKnow && (
             <>
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-green-800 mb-1">Big Picture</h3>
+                <h3 className="text-lg font-semibold text-green-800 mb-1">Big Picture</h3>
                 <p className="text-sm text-green-700/80">{pathway.description}</p>
               </div>
 
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-green-800 mb-1">Need to Know</h3>
+                <h3 className="text-lg font-semibold text-green-800 mb-1">Need to Know</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-green-700/80">
                   <li><strong>Rate-limiting enzyme:</strong> {needToKnow.rateLimiting}</li>
                   <li><strong>Key irreversible steps:</strong> {needToKnow.irreversible}</li>
@@ -170,7 +167,7 @@ export default function PathwayLanding({
               </div>
 
               <div className="mb-5">
-                <h3 className="text-sm font-semibold text-green-800 mb-1">Important steps and information</h3>
+                <h3 className="text-lg font-semibold text-green-800 mb-1">Important steps and information</h3>
                 <ul className="list-disc pl-5 space-y-1 text-sm text-green-700/80">
                   {pathway.steps.slice(0, 4).map((step) => (
                     <li key={step.id}>
@@ -183,24 +180,10 @@ export default function PathwayLanding({
           )}
 
           <button
-            onClick={() => unlockPathway(typedPathwayId)}
-            className="inline-flex items-center justify-center rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2"
-          >
-            Start growing
-          </button>
-        </div>
-      )}
-
-
-
-      {pathwayUnlocked && !diagramUnlocked && (
-        <div className="bg-white rounded-2xl border border-green-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-green-900 mb-2">Unlock Interactive Diagram</h2>
-          <p className="text-sm text-green-700/80 mb-4">
-            Great start. Unlock the Interactive Diagram next to open the remaining activities.
-          </p>
-          <button
-            onClick={() => unlockDiagram(typedPathwayId)}
+            onClick={() => {
+              unlockPathway(typedPathwayId);
+              useProgressStore.getState().unlockDiagram(typedPathwayId);
+            }}
             className="inline-flex items-center justify-center rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2"
           >
             Start growing
