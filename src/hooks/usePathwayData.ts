@@ -11,6 +11,8 @@ const pathwayLoaders: Record<PathwayId, () => Promise<Pathway>> = {
   'fatty-acid-synthesis': () => import('@/data/pathways/fatty-acid-synthesis').then((m) => m.fattyAcidSynthesisPathway),
   'beta-oxidation': () => import('@/data/pathways/beta-oxidation').then((m) => m.betaOxidationPathway),
   'ketone-metabolism': () => import('@/data/pathways/ketone-metabolism').then((m) => m.ketoneMetabolismPathway),
+  'tca-cycle': () => import('@/data/pathways/tca-cycle').then((m) => m.tcaCyclePathway),
+  etc: () => import('@/data/pathways/etc').then((m) => m.etcPathway),
   'tca-etc': () => import('@/data/pathways/tca-etc').then((m) => m.tcaEtcPathway),
   'pentose-phosphate': () => import('@/data/pathways/pentose-phosphate').then((m) => m.pentosePhosphatePathway),
 };
