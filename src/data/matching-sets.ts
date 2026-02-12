@@ -1,91 +1,89 @@
-import type { MatchPair } from './types';
+import type { MatchPair, Pathway } from './types';
+import { glycolysisPathway } from './pathways/glycolysis';
+import { gluconeogenesisPathway } from './pathways/gluconeogenesis';
+import { glycogenesisPathway } from './pathways/glycogenesis';
+import { glycogenolysisPathway } from './pathways/glycogenolysis';
+import { fattyAcidSynthesisPathway } from './pathways/fatty-acid-synthesis';
+import { betaOxidationPathway } from './pathways/beta-oxidation';
+import { ketoneMetabolismPathway } from './pathways/ketone-metabolism';
+import { tcaCyclePathway } from './pathways/tca-cycle';
+import { etcPathway } from './pathways/etc';
+import { pentosePhosphatePathway } from './pathways/pentose-phosphate';
 
-export const matchingSets: MatchPair[] = [
-  // ── GLYCOLYSIS: Enzyme ↔ Reaction ─────────────────────────
-  {
-    id: 'gly-m1',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Hexokinase',
-    rightLabel: 'Glucose → Glucose-6-phosphate',
-    category: 'enzyme-reaction',
-  },
-  {
-    id: 'gly-m2',
-    pathwayId: 'glycolysis',
-    leftLabel: 'PFK-1',
-    rightLabel: 'Fructose-6-P → Fructose-1,6-BP',
-    category: 'enzyme-reaction',
-  },
-  {
-    id: 'gly-m3',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Aldolase',
-    rightLabel: 'Fructose-1,6-BP → G3P + DHAP',
-    category: 'enzyme-reaction',
-  },
-  {
-    id: 'gly-m4',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Pyruvate kinase',
-    rightLabel: 'PEP → Pyruvate + ATP',
-    category: 'enzyme-reaction',
-  },
-  {
-    id: 'gly-m5',
-    pathwayId: 'glycolysis',
-    leftLabel: 'GAPDH',
-    rightLabel: 'G3P → 1,3-BPG (uses NAD+)',
-    category: 'enzyme-reaction',
-  },
-  // ── GLYCOLYSIS: Substrate ↔ Product ───────────────────────
-  {
-    id: 'gly-m6',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Glucose (substrate)',
-    rightLabel: '2 Pyruvate (product)',
-    category: 'substrate-product',
-  },
-  {
-    id: 'gly-m7',
-    pathwayId: 'glycolysis',
-    leftLabel: 'NAD+ (consumed)',
-    rightLabel: 'NADH (produced)',
-    category: 'substrate-product',
-  },
-  {
-    id: 'gly-m8',
-    pathwayId: 'glycolysis',
-    leftLabel: '2-Phosphoglycerate',
-    rightLabel: 'Phosphoenolpyruvate',
-    category: 'substrate-product',
-  },
-  // ── GLYCOLYSIS: Regulator ↔ Target ────────────────────────
-  {
-    id: 'gly-m9',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Fructose-2,6-BP (activator)',
-    rightLabel: 'PFK-1',
-    category: 'regulator-target',
-  },
-  {
-    id: 'gly-m10',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Citrate (inhibitor)',
-    rightLabel: 'PFK-1',
-    category: 'regulator-target',
-  },
-  {
-    id: 'gly-m11',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Glucose-6-P (inhibitor)',
-    rightLabel: 'Hexokinase',
-    category: 'regulator-target',
-  },
-  {
-    id: 'gly-m12',
-    pathwayId: 'glycolysis',
-    leftLabel: 'Alanine (inhibitor)',
-    rightLabel: 'Pyruvate kinase',
-    category: 'regulator-target',
-  },
+const allPathways: Pathway[] = [
+  glycolysisPathway,
+  gluconeogenesisPathway,
+  glycogenesisPathway,
+  glycogenolysisPathway,
+  fattyAcidSynthesisPathway,
+  betaOxidationPathway,
+  ketoneMetabolismPathway,
+  tcaCyclePathway,
+  etcPathway,
+  pentosePhosphatePathway,
 ];
+
+function buildPairs(pathway: Pathway): MatchPair[] {
+  const enzymeReactionPairs: MatchPair[] = pathway.steps.slice(0, 4).map((step, index) => ({
+    id: `${pathway.id}-m-er-${index + 1}`,
+    pathwayId: pathway.id,
+    leftLabel: step.enzyme.name,
+    rightLabel: step.reactionName,
+    category: 'enzyme-reaction',
+  }));
+
+  const firstStep = pathway.steps[0];
+  const lastStep = pathway.steps[pathway.steps.length - 1];
+
+  const substrateProductPairs: MatchPair[] = [
+    {
+      id: `${pathway.id}-m-sp-1`,
+      pathwayId: pathway.id,
+      leftLabel: `${firstStep.substrates[0]?.name ?? 'Initial substrate'} (start)`,
+      rightLabel: `${lastStep.products[0]?.name ?? 'Final product'} (end product)`,
+      category: 'substrate-product',
+    },
+    {
+      id: `${pathway.id}-m-sp-2`,
+      pathwayId: pathway.id,
+      leftLabel: 'Net ATP outcome',
+      rightLabel: `${pathway.energySummary.netAtp} ATP`,
+      category: 'substrate-product',
+    },
+  ];
+
+  const regulators = pathway.steps
+    .flatMap((step) => step.enzyme.regulation.map((reg) => ({ step, reg })))
+    .slice(0, 2)
+    .map((entry, index): MatchPair => ({
+      id: `${pathway.id}-m-rt-${index + 1}`,
+      pathwayId: pathway.id,
+      leftLabel: entry.reg.regulatorName,
+      rightLabel: entry.step.enzyme.name,
+      category: 'regulator-target',
+    }));
+
+  const fallbackRegulators: MatchPair[] = [];
+  if (regulators.length < 2) {
+    fallbackRegulators.push(
+      {
+        id: `${pathway.id}-m-rt-f1`,
+        pathwayId: pathway.id,
+        leftLabel: 'Primary location',
+        rightLabel: pathway.location,
+        category: 'pathway-location',
+      },
+      {
+        id: `${pathway.id}-m-rt-f2`,
+        pathwayId: pathway.id,
+        leftLabel: 'Pathway name',
+        rightLabel: pathway.name,
+        category: 'pathway-location',
+      },
+    );
+  }
+
+  return [...enzymeReactionPairs, ...substrateProductPairs, ...regulators, ...fallbackRegulators].slice(0, 8);
+}
+
+export const matchingSets: MatchPair[] = allPathways.flatMap((pathway) => buildPairs(pathway));
