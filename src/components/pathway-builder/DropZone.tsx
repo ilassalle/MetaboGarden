@@ -5,7 +5,6 @@ import type { ItemType } from './DraggableItem';
 
 interface DropZoneProps {
   id: string;
-  label: string;
   acceptType: ItemType;
   currentItem?: string;
   isCorrect?: boolean | null;
@@ -44,7 +43,6 @@ const typeLabels: Record<ItemType, string> = {
 
 export default function DropZone({
   id,
-  label,
   acceptType,
   currentItem,
   isCorrect,
