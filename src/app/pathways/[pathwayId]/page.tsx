@@ -6,6 +6,9 @@ import Link from 'next/link';
 import GameModeCard from '@/components/layout/GameModeCard';
 import { getPathwayMeta } from '@/data/pathway-registry';
 import { isValidPathwayId } from '@/lib/helpers';
+import type { Pathway, PathwayId } from '@/data/types';
+import { usePathwayData } from '@/hooks/usePathwayData';
+import { useProgressStore } from '@/lib/progress-store';
 
 function DragIcon() {
   return (
@@ -48,6 +51,43 @@ function MatchIcon() {
   );
 }
 
+function buildNeedToKnow(pathway: Pathway) {
+  const rateLimiting = pathway.steps.filter((step) => step.isRateLimiting);
+  const irreversible = pathway.steps.filter((step) => !step.isReversible);
+
+  const regulators = new Set<string>();
+  const tissues = new Set<string>();
+
+  pathway.steps.forEach((step) => {
+    step.enzyme.regulation.forEach((reg) => {
+      const arrow = reg.regulatorType.includes('activator') || reg.regulatorType.includes('feedforward') ? '↑' : '↓';
+      regulators.add(`${reg.regulatorName} ${arrow}`);
+      if (reg.tissueSpecific) tissues.add(reg.tissueSpecific);
+    });
+
+    step.enzyme.tissueVariants?.forEach((variant) => {
+      tissues.add(`${variant.tissue}: ${variant.isoformName}`);
+    });
+  });
+
+  const energy = pathway.energySummary;
+
+  return {
+    rateLimiting: rateLimiting.length > 0
+      ? rateLimiting.map((step) => `${step.enzyme.name} (Step ${step.stepNumber})`).join('; ')
+      : 'No single rate-limiting step highlighted in this pathway dataset.',
+    irreversible: irreversible.length > 0
+      ? irreversible.map((step) => `Step ${step.stepNumber} ${step.reactionName}`).join('; ')
+      : 'No irreversible steps highlighted in this pathway dataset.',
+    regulators: regulators.size > 0
+      ? Array.from(regulators).join('; ')
+      : 'No major regulators listed in this pathway dataset.',
+    netAtp: `${energy.netAtp} net ATP (ATP produced: ${energy.atpProduced}, ATP consumed: ${energy.atpConsumed})`,
+    reducingEquivalents: `NADH: ${energy.nadhProduced}; FADH₂: ${energy.fadh2Produced}; NADPH consumed: ${energy.nadphConsumed ?? 0}`,
+    tissues: tissues.size > 0 ? Array.from(tissues).join('; ') : `Primary location: ${pathway.location}`,
+  };
+}
+
 export default function PathwayLanding({
   params,
 }: {
@@ -62,7 +102,21 @@ export default function PathwayLanding({
   const meta = getPathwayMeta(pathwayId);
   if (!meta) notFound();
 
+  const typedPathwayId = pathwayId as PathwayId;
+  const { pathway, loading } = usePathwayData(typedPathwayId);
+  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
+  const isDiagramUnlocked = useProgressStore((s) => s.isDiagramUnlocked);
+  const unlockPathway = useProgressStore((s) => s.unlockPathway);
+  const unlockDiagram = useProgressStore((s) => s.unlockDiagram);
+
+  const pathwayUnlocked = isPathwayUnlocked(typedPathwayId);
+  const diagramUnlocked = isDiagramUnlocked(typedPathwayId);
+
+  const canAccessDiagram = pathwayUnlocked && diagramUnlocked;
+  const canAccessOtherModes = pathwayUnlocked && diagramUnlocked;
+
   const basePath = `/pathways/${pathwayId}`;
+  const needToKnow = pathway ? buildNeedToKnow(pathway) : null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
@@ -90,30 +144,101 @@ export default function PathwayLanding({
         <p className="text-green-700/70">{meta.shortDescription}</p>
       </div>
 
+      {!pathwayUnlocked && (
+        <div className="bg-white rounded-2xl border border-green-200 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-green-900 mb-3">Unlock this pathway</h2>
+
+          {loading && <p className="text-sm text-green-600/70">Loading pathway overview...</p>}
+
+          {pathway && needToKnow && (
+            <>
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-green-800 mb-1">Big Picture</h3>
+                <p className="text-sm text-green-700/80">{pathway.description}</p>
+              </div>
+
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-green-800 mb-1">Need to Know</h3>
+                <ul className="list-disc pl-5 space-y-1 text-sm text-green-700/80">
+                  <li><strong>Rate-limiting enzyme:</strong> {needToKnow.rateLimiting}</li>
+                  <li><strong>Key irreversible steps:</strong> {needToKnow.irreversible}</li>
+                  <li><strong>Key regulators (↑ / ↓):</strong> {needToKnow.regulators}</li>
+                  <li><strong>Net ATP:</strong> {needToKnow.netAtp}</li>
+                  <li><strong>NADH / FADH₂ / NADPH:</strong> {needToKnow.reducingEquivalents}</li>
+                  <li><strong>Tissue specificity (if relevant):</strong> {needToKnow.tissues}</li>
+                </ul>
+              </div>
+
+              <div className="mb-5">
+                <h3 className="text-sm font-semibold text-green-800 mb-1">Important steps and information</h3>
+                <ul className="list-disc pl-5 space-y-1 text-sm text-green-700/80">
+                  {pathway.steps.slice(0, 4).map((step) => (
+                    <li key={step.id}>
+                      Step {step.stepNumber}: {step.reactionName} ({step.enzyme.name})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
+
+          <button
+            onClick={() => unlockPathway(typedPathwayId)}
+            className="inline-flex items-center justify-center rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2"
+          >
+            Start growing
+          </button>
+        </div>
+      )}
+
+
+
+      {pathwayUnlocked && !diagramUnlocked && (
+        <div className="bg-white rounded-2xl border border-green-200 p-6 mb-6">
+          <h2 className="text-lg font-semibold text-green-900 mb-2">Unlock Interactive Diagram</h2>
+          <p className="text-sm text-green-700/80 mb-4">
+            Great start. Unlock the Interactive Diagram next to open the remaining activities.
+          </p>
+          <button
+            onClick={() => unlockDiagram(typedPathwayId)}
+            className="inline-flex items-center justify-center rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2"
+          >
+            Start growing
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <GameModeCard
           href={`${basePath}/diagram`}
           title="Interactive Diagram"
           description="Explore each step of the pathway with detailed info, animations, and energy diagrams."
           icon={<DiagramIcon />}
+          locked={!canAccessDiagram}
         />
         <GameModeCard
           href={`${basePath}/pathway-builder`}
           title="Pathway Builder"
           description="Drag and drop enzymes, substrates, and products to build the pathway from scratch."
           icon={<DragIcon />}
+          locked={!canAccessOtherModes}
+          lockedLabel={pathwayUnlocked ? 'Locked - Explore Interactive Diagram First' : 'Locked'}
         />
         <GameModeCard
           href={`${basePath}/quiz`}
           title="Quiz & Flashcards"
           description="Test your knowledge with multiple choice, fill-in-the-blank, and flashcard questions."
           icon={<QuizIcon />}
+          locked={!canAccessOtherModes}
+          lockedLabel={pathwayUnlocked ? 'Locked - Explore Interactive Diagram First' : 'Locked'}
         />
         <GameModeCard
           href={`${basePath}/matching`}
           title="Matching Game"
           description="Match enzymes to reactions, substrates to products, and regulators to targets."
           icon={<MatchIcon />}
+          locked={!canAccessOtherModes}
+          lockedLabel={pathwayUnlocked ? 'Locked - Explore Interactive Diagram First' : 'Locked'}
         />
       </div>
     </div>

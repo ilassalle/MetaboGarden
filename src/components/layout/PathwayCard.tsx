@@ -5,29 +5,32 @@ import { SeedlingIcon } from './PlantDecoration';
 interface PathwayCardProps {
   pathway: PathwayMeta;
   mastery?: number;
+  locked?: boolean;
 }
 
-export default function PathwayCard({ pathway, mastery = 0 }: PathwayCardProps) {
+export default function PathwayCard({ pathway, mastery = 0, locked = false }: PathwayCardProps) {
   return (
     <Link href={`/pathways/${pathway.id}`}>
       <div className="group relative bg-white rounded-2xl border border-green-200 p-5 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 transition-all duration-300 cursor-pointer h-full">
-        {/* Mastery indicator */}
         <div className="absolute top-3 right-3 flex items-center gap-1.5">
-          <SeedlingIcon
-            className={`w-5 h-5 transition-colors ${
-              mastery > 75
-                ? 'text-green-500'
-                : mastery > 25
-                ? 'text-green-300'
-                : 'text-green-200'
-            }`}
-          />
-          {mastery > 0 && (
-            <span className="text-xs text-green-600 font-medium">{mastery}%</span>
+          {locked ? (
+            <span className="text-xs text-green-700 font-medium">🔒</span>
+          ) : (
+            <>
+              <SeedlingIcon
+                className={`w-5 h-5 transition-colors ${
+                  mastery > 75
+                    ? 'text-green-500'
+                    : mastery > 25
+                    ? 'text-green-300'
+                    : 'text-green-200'
+                }`}
+              />
+              <span className="text-xs text-green-600 font-medium">{mastery}%</span>
+            </>
           )}
         </div>
 
-        {/* Color dot */}
         <div
           className="w-3 h-3 rounded-full mb-3"
           style={{ backgroundColor: pathway.color }}
@@ -51,8 +54,7 @@ export default function PathwayCard({ pathway, mastery = 0 }: PathwayCardProps) 
           <span>{pathway.location}</span>
         </div>
 
-        {/* Bottom progress bar */}
-        {mastery > 0 && (
+        {!locked && (
           <div className="mt-3 h-1 bg-green-100 rounded-full overflow-hidden">
             <div
               className="h-full bg-green-400 rounded-full transition-all duration-500"
