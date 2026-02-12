@@ -42,8 +42,12 @@ export default function PathwayCard({ pathway, mastery = 0 }: PathwayCardProps) 
         </p>
 
         <div className="flex items-center gap-3 text-xs text-green-600/60">
-          <span>{pathway.stepCount} steps</span>
-          <span className="w-1 h-1 rounded-full bg-green-300" />
+          {typeof pathway.stepCount === 'number' && (
+            <>
+              <span>{pathway.stepCount} steps</span>
+              <span className="w-1 h-1 rounded-full bg-green-300" />
+            </>
+          )}
           <span>{pathway.location}</span>
         </div>
 

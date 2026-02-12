@@ -10,7 +10,8 @@ export function isValidPathwayId(id: string): id is PathwayId {
     'fatty-acid-synthesis',
     'beta-oxidation',
     'ketone-metabolism',
-    'tca-etc',
+    'tca-cycle',
+    'etc',
     'pentose-phosphate',
   ];
   return valid.includes(id as PathwayId);

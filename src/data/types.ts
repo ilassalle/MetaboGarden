@@ -10,6 +10,8 @@ export type PathwayId =
   | 'fatty-acid-synthesis'
   | 'beta-oxidation'
   | 'ketone-metabolism'
+  | 'tca-cycle'
+  | 'etc'
   | 'tca-etc'
   | 'pentose-phosphate';
 
@@ -193,7 +195,7 @@ export interface PathwayMeta {
   id: PathwayId;
   label: string;
   shortDescription: string;
-  stepCount: number;
+  stepCount?: number;
   location: string;
   color: string;
 }
