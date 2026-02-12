@@ -100,8 +100,7 @@ interface PathwayBuilderGameProps {
 
 export default function PathwayBuilderGame({ pathway }: PathwayBuilderGameProps) {
   // --- Shuffled bank items (stable for the session, re-shuffled on reset) ---
-  const [shuffleKey, setShuffleKey] = useState(0);
-  const bankItems = useMemo(() => shuffle(buildBankItems(pathway)), [pathway, shuffleKey]);
+  const [bankItems, setBankItems] = useState<BankItem[]>(() => shuffle(buildBankItems(pathway)));
 
   // --- Assignments state ---
   const initialAssignments: AssignmentMap = useMemo(() => {
@@ -221,8 +220,8 @@ export default function PathwayBuilderGame({ pathway }: PathwayBuilderGameProps)
     setScore(null);
     setValidationResults([]);
     setShowFeedback(false);
-    setShuffleKey((k) => k + 1);
-  }, [initialAssignments]);
+    setBankItems(shuffle(buildBankItems(pathway)));
+  }, [initialAssignments, pathway]);
 
   // --- Lookup helpers for validation results ---
   const getValidation = useCallback(
@@ -300,7 +299,6 @@ export default function PathwayBuilderGame({ pathway }: PathwayBuilderGameProps)
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <DropZone
                       id={`drop-${step.stepNumber}-enzyme`}
-                      label="Enzyme"
                       acceptType="enzyme"
                       currentItem={a?.enzymeLabel}
                       isCorrect={getCorrectness(step.stepNumber, 'enzyme') ?? undefined}
@@ -312,7 +310,6 @@ export default function PathwayBuilderGame({ pathway }: PathwayBuilderGameProps)
                     />
                     <DropZone
                       id={`drop-${step.stepNumber}-substrate`}
-                      label="Substrate"
                       acceptType="substrate"
                       currentItem={a?.substrateLabel}
                       isCorrect={getCorrectness(step.stepNumber, 'substrate') ?? undefined}
@@ -324,7 +321,6 @@ export default function PathwayBuilderGame({ pathway }: PathwayBuilderGameProps)
                     />
                     <DropZone
                       id={`drop-${step.stepNumber}-product`}
-                      label="Product"
                       acceptType="product"
                       currentItem={a?.productLabel}
                       isCorrect={getCorrectness(step.stepNumber, 'product') ?? undefined}

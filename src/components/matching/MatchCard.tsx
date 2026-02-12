@@ -8,7 +8,6 @@ interface MatchCardProps {
   isMatched: boolean;
   isIncorrect: boolean;
   onClick: () => void;
-  side: 'left' | 'right';
 }
 
 const shakeAnimation = {
@@ -21,8 +20,7 @@ export default function MatchCard({
   isSelected,
   isMatched,
   isIncorrect,
-  onClick,
-  side,
+  onClick
 }: MatchCardProps) {
   function cardClass() {
     const base =

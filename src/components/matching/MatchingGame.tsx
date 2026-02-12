@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { PathwayId, MatchPair } from '@/data/types';
 import { matchingSets } from '@/data/matching-sets';
@@ -18,8 +18,8 @@ export default function MatchingGame({ pathwayId }: MatchingGameProps) {
     [pathwayId],
   );
 
-  const [leftItems, setLeftItems] = useState<MatchPair[]>([]);
-  const [rightItems, setRightItems] = useState<MatchPair[]>([]);
+  const [leftItems, setLeftItems] = useState<MatchPair[]>(() => shuffle(pairs));
+  const [rightItems, setRightItems] = useState<MatchPair[]>(() => shuffle(pairs));
   const [selectedLeftId, setSelectedLeftId] = useState<string | null>(null);
   const [matched, setMatched] = useState<Set<string>>(new Set());
   const [incorrectId, setIncorrectId] = useState<string | null>(null);
@@ -36,10 +36,6 @@ export default function MatchingGame({ pathwayId }: MatchingGameProps) {
     setIncorrectAttempts(0);
     setFinished(false);
   }, [pairs]);
-
-  useEffect(() => {
-    initGame();
-  }, [initGame]);
 
   /* ── No pairs available ── */
   if (pairs.length === 0) {
@@ -151,7 +147,6 @@ export default function MatchingGame({ pathwayId }: MatchingGameProps) {
                   isMatched={matched.has(pair.id)}
                   isIncorrect={false}
                   onClick={() => handleLeftClick(pair.id)}
-                  side="left"
                 />
               ))}
             </div>
@@ -169,7 +164,6 @@ export default function MatchingGame({ pathwayId }: MatchingGameProps) {
                   isMatched={matched.has(pair.id)}
                   isIncorrect={incorrectId === pair.id}
                   onClick={() => handleRightClick(pair)}
-                  side="right"
                 />
               ))}
             </div>
