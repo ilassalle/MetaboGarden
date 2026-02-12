@@ -143,8 +143,7 @@ export default function PathwayLanding({
         <p className="text-green-700/70">{meta.shortDescription}</p>
       </div>
 
-      {!pathwayUnlocked && (
-        <div className="bg-white rounded-2xl border border-green-200 p-6 mb-6">
+      <div className="bg-white rounded-2xl border border-green-200 p-6 mb-6">
           {loading && <p className="text-sm text-green-600/70">Loading pathway overview...</p>}
 
           {pathway && needToKnow && (
@@ -179,17 +178,21 @@ export default function PathwayLanding({
             </>
           )}
 
-          <button
-            onClick={() => {
-              unlockPathway(typedPathwayId);
-              useProgressStore.getState().unlockDiagram(typedPathwayId);
-            }}
-            className="inline-flex items-center justify-center rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2"
-          >
-            Start growing
-          </button>
+          {!pathwayUnlocked ? (
+            <button
+              onClick={() => {
+                unlockPathway(typedPathwayId);
+                useProgressStore.getState().unlockDiagram(typedPathwayId);
+              }}
+              className="inline-flex items-center justify-center rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2"
+            >
+              Start growing
+            </button>
+          ) : (
+            <p className="text-sm text-green-700/80 font-medium">Pathway unlocked — revisit this summary anytime.</p>
+          )}
         </div>
-      )}
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <GameModeCard
