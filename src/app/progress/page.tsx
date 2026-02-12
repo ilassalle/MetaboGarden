@@ -45,7 +45,7 @@ function PlantGrowth({ mastery }: { mastery: number }) {
 }
 
 export default function ProgressPage() {
-  const { progress, getPathwayMastery } = useProgressStore();
+  const { progress, getPathwayMastery, isPathwayUnlocked } = useProgressStore();
 
   const overallMastery = Math.round(
     pathwayRegistry.reduce((sum, p) => sum + getPathwayMastery(p.id), 0) / pathwayRegistry.length
@@ -78,14 +78,20 @@ export default function ProgressPage() {
       {/* Garden grid */}
       <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 gap-4">
         {pathwayRegistry.map((pathway) => {
-          const mastery = getPathwayMastery(pathway.id);
+          const unlocked = isPathwayUnlocked(pathway.id);
+          const mastery = unlocked ? getPathwayMastery(pathway.id) : 0;
+
           return (
             <div
               key={pathway.id}
               className="bg-white rounded-2xl border border-green-200 p-4 text-center"
             >
               <div className="mb-3 h-16 flex items-end justify-center">
-                <PlantGrowth mastery={mastery} />
+                {unlocked ? (
+                  <PlantGrowth mastery={mastery} />
+                ) : (
+                  <div className="text-green-300 text-xl">🔒</div>
+                )}
               </div>
               <h3 className="text-sm font-medium text-green-900 mb-1">{pathway.label}</h3>
               <div className="h-1 bg-green-100 rounded-full overflow-hidden mb-1">
@@ -94,7 +100,9 @@ export default function ProgressPage() {
                   style={{ width: `${mastery}%` }}
                 />
               </div>
-              <span className="text-xs text-green-600/50">{Math.round(mastery)}%</span>
+              <span className="text-xs text-green-600/50">
+                {unlocked ? `${Math.round(mastery)}%` : 'Locked'}
+              </span>
             </div>
           );
         })}

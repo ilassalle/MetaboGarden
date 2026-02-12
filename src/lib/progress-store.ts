@@ -9,6 +9,10 @@ interface ProgressStore {
   updateGameProgress: (entry: GameProgress) => void;
   getGameProgress: (pathwayId: PathwayId, gameMode: GameMode) => GameProgress | undefined;
   getPathwayMastery: (pathwayId: PathwayId) => number;
+  isPathwayUnlocked: (pathwayId: PathwayId) => boolean;
+  unlockPathway: (pathwayId: PathwayId) => void;
+  isDiagramUnlocked: (pathwayId: PathwayId) => boolean;
+  unlockDiagram: (pathwayId: PathwayId) => void;
   addAchievement: (achievementId: string) => void;
   resetProgress: () => void;
 }
@@ -16,6 +20,8 @@ interface ProgressStore {
 const initialProgress: UserProgress = {
   gameProgress: [],
   achievements: [],
+  unlockedPathways: [],
+  diagramUnlockedPathways: [],
   lastPlayedAt: new Date().toISOString(),
 };
 
@@ -68,6 +74,42 @@ export const useProgressStore = create<ProgressStore>()(
         return scores.reduce((a, b) => a + b, 0) / modes.length;
       },
 
+      isPathwayUnlocked: (pathwayId) => {
+        return get().progress.unlockedPathways.includes(pathwayId);
+      },
+
+      unlockPathway: (pathwayId) => {
+        set((state) => {
+          if (state.progress.unlockedPathways.includes(pathwayId)) return state;
+          return {
+            progress: {
+              ...state.progress,
+              unlockedPathways: [...state.progress.unlockedPathways, pathwayId],
+              lastPlayedAt: new Date().toISOString(),
+            },
+          };
+        });
+      },
+
+
+
+      isDiagramUnlocked: (pathwayId) => {
+        return get().progress.diagramUnlockedPathways.includes(pathwayId);
+      },
+
+      unlockDiagram: (pathwayId) => {
+        set((state) => {
+          if (state.progress.diagramUnlockedPathways.includes(pathwayId)) return state;
+          return {
+            progress: {
+              ...state.progress,
+              diagramUnlockedPathways: [...state.progress.diagramUnlockedPathways, pathwayId],
+              lastPlayedAt: new Date().toISOString(),
+            },
+          };
+        });
+      },
+
       addAchievement: (achievementId) => {
         set((state) => {
           if (state.progress.achievements.includes(achievementId)) return state;
@@ -86,6 +128,19 @@ export const useProgressStore = create<ProgressStore>()(
     }),
     {
       name: 'metab-game-progress',
+      merge: (persisted, current) => {
+        const persistedState = persisted as { progress?: Partial<UserProgress> } | undefined;
+        return {
+          ...current,
+          ...persistedState,
+          progress: {
+            ...current.progress,
+            ...persistedState?.progress,
+            unlockedPathways: persistedState?.progress?.unlockedPathways ?? [],
+            diagramUnlockedPathways: persistedState?.progress?.diagramUnlockedPathways ?? [],
+          },
+        };
+      },
     }
   )
 );

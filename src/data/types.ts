@@ -185,6 +185,8 @@ export interface GameProgress {
 export interface UserProgress {
   gameProgress: GameProgress[];
   achievements: string[];
+  unlockedPathways: PathwayId[];
+  diagramUnlockedPathways: PathwayId[];
   lastPlayedAt: string;
 }
 

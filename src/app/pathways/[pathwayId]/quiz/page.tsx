@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { isValidPathwayId } from '@/lib/helpers';
 import { getPathwayMeta } from '@/data/pathway-registry';
 import type { PathwayId } from '@/data/types';
+import { useProgressStore } from '@/lib/progress-store';
 import QuizGame from '@/components/quiz/QuizGame';
 
 export default function QuizPage({
@@ -19,6 +20,12 @@ export default function QuizPage({
 
   const meta = getPathwayMeta(pathwayId);
   if (!meta) notFound();
+
+  const typedPathwayId = pathwayId as PathwayId;
+  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
+  const isDiagramUnlocked = useProgressStore((s) => s.isDiagramUnlocked);
+  const pathwayUnlocked = isPathwayUnlocked(typedPathwayId);
+  const unlocked = pathwayUnlocked && isDiagramUnlocked(typedPathwayId);
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
@@ -37,7 +44,19 @@ export default function QuizPage({
         Test your knowledge with MCAT-style questions
       </p>
 
-      <QuizGame pathwayId={pathwayId as PathwayId} />
+
+      {!unlocked && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 mb-6">
+          <p className="text-sm text-amber-800">
+            {pathwayUnlocked ? 'Locked - Explore Interactive Diagram First' : 'This pathway is locked. Read the pathway primer and unlock it first.'}
+          </p>
+          <Link href={`/pathways/${pathwayId}`} className="inline-flex mt-2 text-sm text-amber-700 hover:text-amber-800 underline">
+            Go to pathway overview
+          </Link>
+        </div>
+      )}
+
+      {unlocked && <QuizGame pathwayId={typedPathwayId} />}
     </div>
   );
 }

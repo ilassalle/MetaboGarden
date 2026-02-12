@@ -6,9 +6,27 @@ interface GameModeCardProps {
   description: string;
   icon: React.ReactNode;
   bestScore?: number;
+  locked?: boolean;
+  lockedLabel?: string;
 }
 
-export default function GameModeCard({ href, title, description, icon, bestScore }: GameModeCardProps) {
+export default function GameModeCard({ href, title, description, icon, bestScore, locked = false, lockedLabel = 'Locked' }: GameModeCardProps) {
+  if (locked) {
+    return (
+      <div className="group bg-green-50/50 rounded-2xl border border-green-200 p-6 h-full flex flex-col opacity-80">
+        <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mb-4 text-green-600">
+          {icon}
+        </div>
+
+        <div className="mb-2 inline-flex w-fit items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+          🔒 {lockedLabel}
+        </div>
+        <h3 className="font-semibold text-green-900 mb-1">{title}</h3>
+        <p className="text-sm text-green-700/70 flex-1">{description}</p>
+      </div>
+    );
+  }
+
   return (
     <Link href={href}>
       <div className="group bg-white rounded-2xl border border-green-200 p-6 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 transition-all duration-300 cursor-pointer h-full flex flex-col">

@@ -7,6 +7,7 @@ import { VineCorner } from '@/components/layout/PlantDecoration';
 
 export default function Home() {
   const getPathwayMastery = useProgressStore((s) => s.getPathwayMastery);
+  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
 
   return (
     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12">
@@ -27,13 +28,17 @@ export default function Home() {
 
       {/* Pathway grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {pathwayRegistry.map((pathway) => (
-          <PathwayCard
-            key={pathway.id}
-            pathway={pathway}
-            mastery={getPathwayMastery(pathway.id)}
-          />
-        ))}
+        {pathwayRegistry.map((pathway) => {
+          const unlocked = isPathwayUnlocked(pathway.id);
+          return (
+            <PathwayCard
+              key={pathway.id}
+              pathway={pathway}
+              mastery={unlocked ? getPathwayMastery(pathway.id) : 0}
+              locked={!unlocked}
+            />
+          );
+        })}
       </div>
     </div>
   );
