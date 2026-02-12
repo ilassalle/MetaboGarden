@@ -7,10 +7,11 @@ export const fattyAcidSynthesisPathway: Pathway = {
     'De novo synthesis of fatty acids from acetyl-CoA, occurring in the cytoplasm of liver and adipose tissue. The pathway converts citrate exported from the mitochondria into palmitate (C16) through repeated cycles of 2-carbon addition using the fatty acid synthase (FAS) complex. NADPH provides the reducing equivalents, primarily from the pentose phosphate pathway and malic enzyme.',
   location: 'Cytoplasm',
   netEquation:
-    '8 Acetyl-CoA + 14 NADPH + 14 H+ + 7 ATP → Palmitate + 8 CoA + 14 NADP+ + 7 ADP + 7 Pi + 6 H₂O',
+    '8 Acetyl-CoA + 7 ATP + 14 NADPH + 14 H+ → Palmitate + 8 CoA + 7 ADP + 7 Pi + 14 NADP+ + 6 H2O',
   energySummary: {
     atpConsumed: 7,
     atpProduced: 0,
+    nadphConsumed: 14,
     nadhProduced: 0,
     fadh2Produced: 0,
     netAtp: -7,
@@ -56,7 +57,7 @@ export const fattyAcidSynthesisPathway: Pathway = {
     'Malonyl-CoA (product of ACC) inhibits CPT-I, preventing simultaneous fatty acid synthesis and beta-oxidation',
     'NADPH sources: pentose phosphate pathway (major) and malic enzyme',
     'Palmitate (C16:0) is the primary product; further elongation and desaturation occur in the ER',
-    'Net equation: 8 acetyl-CoA + 14 NADPH + 7 ATP produce one palmitate',
+    'Net equation: 8 Acetyl-CoA + 7 ATP + 14 NADPH + 14 H+ → Palmitate + 8 CoA + 7 ADP + 7 Pi + 14 NADP+ + 6 H2O',
     'Citrate shuttle exports acetyl-CoA from mitochondria to cytoplasm since acetyl-CoA cannot cross the inner mitochondrial membrane directly',
   ],
   steps: [
@@ -91,7 +92,7 @@ export const fattyAcidSynthesisPathway: Pathway = {
         {
           id: 'citrate',
           name: 'Citrate',
-          abbreviation: 'Cit',
+          abbreviation: 'Citrate',
           formula: 'C6H8O7',
         },
         {
@@ -100,12 +101,18 @@ export const fattyAcidSynthesisPathway: Pathway = {
           abbreviation: 'CoA',
           formula: 'C21H36N7O16P3S',
         },
+        {
+          id: 'atp-fas1',
+          name: 'ATP',
+          abbreviation: 'ATP',
+          formula: 'C10H16N5O13P3',
+        },
       ],
       products: [
         {
           id: 'acetyl-coa-fas1',
           name: 'Acetyl-CoA',
-          abbreviation: 'Ac-CoA',
+          abbreviation: 'Acetyl-CoA',
           formula: 'C23H38N7O17P3S',
         },
         {
@@ -113,6 +120,18 @@ export const fattyAcidSynthesisPathway: Pathway = {
           name: 'Oxaloacetate',
           abbreviation: 'OAA',
           formula: 'C4H4O5',
+        },
+        {
+          id: 'adp-fas1',
+          name: 'ADP',
+          abbreviation: 'ADP',
+          formula: 'C10H15N5O10P2',
+        },
+        {
+          id: 'pi-fas1',
+          name: 'Inorganic Phosphate',
+          abbreviation: 'Pi',
+          formula: 'PO4^3-',
         },
       ],
       cofactorsConsumed: ['ATP', 'CoA'],
@@ -188,7 +207,7 @@ export const fattyAcidSynthesisPathway: Pathway = {
         {
           id: 'acetyl-coa-fas2',
           name: 'Acetyl-CoA',
-          abbreviation: 'Ac-CoA',
+          abbreviation: 'Acetyl-CoA',
           formula: 'C23H38N7O17P3S',
         },
         {
@@ -197,13 +216,31 @@ export const fattyAcidSynthesisPathway: Pathway = {
           abbreviation: 'HCO3-',
           formula: 'CHO3-',
         },
+        {
+          id: 'atp-fas2',
+          name: 'ATP',
+          abbreviation: 'ATP',
+          formula: 'C10H16N5O13P3',
+        },
       ],
       products: [
         {
           id: 'malonyl-coa',
           name: 'Malonyl-CoA',
-          abbreviation: 'Mal-CoA',
+          abbreviation: 'Malonyl-CoA',
           formula: 'C24H38N7O19P3S',
+        },
+        {
+          id: 'adp-fas2',
+          name: 'ADP',
+          abbreviation: 'ADP',
+          formula: 'C10H15N5O10P2',
+        },
+        {
+          id: 'pi-fas2',
+          name: 'Inorganic Phosphate',
+          abbreviation: 'Pi',
+          formula: 'PO4^3-',
         },
       ],
       cofactorsConsumed: ['ATP', 'HCO3-'],
@@ -212,7 +249,7 @@ export const fattyAcidSynthesisPathway: Pathway = {
       isReversible: false,
       isRateLimiting: true,
       detailedDescription:
-        'This is the committed and rate-limiting step of fatty acid synthesis. ACC is the primary regulatory enzyme of the pathway. It exists in an inactive protomeric form and an active polymerized filamentous form. Citrate promotes polymerization (activation), while palmitoyl-CoA promotes depolymerization (inactivation). Phosphorylation by AMPK or PKA (in response to glucagon/epinephrine) inactivates ACC, while dephosphorylation by PP2A (in response to insulin) activates it. The product malonyl-CoA also inhibits CPT-I, preventing fatty acid oxidation during synthesis.',
+        'Rate-limiting step. This is the committed and rate-limiting step of fatty acid synthesis. ACC is the primary regulatory enzyme of the pathway. It exists in an inactive protomeric form and an active polymerized filamentous form. Citrate promotes polymerization (activation), while palmitoyl-CoA promotes depolymerization (inactivation). Phosphorylation by AMPK or PKA (in response to glucagon/epinephrine) inactivates ACC, while dephosphorylation by PP2A (in response to insulin) activates it. The product malonyl-CoA also inhibits CPT-I, preventing fatty acid oxidation during synthesis.',
       clinicalSignificance:
         'Malonyl-CoA inhibits CPT-I, creating a reciprocal regulation between fatty acid synthesis and oxidation. Biotin deficiency impairs this reaction.',
       mcatHighYield: true,
@@ -242,13 +279,13 @@ export const fattyAcidSynthesisPathway: Pathway = {
         {
           id: 'malonyl-coa-fas3',
           name: 'Malonyl-CoA',
-          abbreviation: 'Mal-CoA',
+          abbreviation: 'Malonyl-CoA',
           formula: 'C24H38N7O19P3S',
         },
         {
           id: 'acetyl-coa-fas3',
           name: 'Acetyl-CoA',
-          abbreviation: 'Ac-CoA',
+          abbreviation: 'Acetyl-CoA',
           formula: 'C23H38N7O17P3S',
         },
       ],
@@ -443,6 +480,18 @@ export const fattyAcidSynthesisPathway: Pathway = {
           abbreviation: 'Enoyl-ACP',
           formula: 'C4H5O-ACP',
         },
+        {
+          id: 'nadph-fas7',
+          name: 'NADPH',
+          abbreviation: 'NADPH',
+          formula: 'C21H30N7O17P3',
+        },
+        {
+          id: 'proton-fas7',
+          name: 'Proton',
+          abbreviation: 'H+',
+          formula: 'H+',
+        },
       ],
       products: [
         {
@@ -450,6 +499,12 @@ export const fattyAcidSynthesisPathway: Pathway = {
           name: 'Butyryl-ACP (Acyl-ACP)',
           abbreviation: 'Acyl-ACP',
           formula: 'C4H7O-ACP',
+        },
+        {
+          id: 'nadp-fas7',
+          name: 'NADP+',
+          abbreviation: 'NADP+',
+          formula: 'C21H28N7O17P3',
         },
       ],
       cofactorsConsumed: ['NADPH'],
