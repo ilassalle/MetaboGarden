@@ -1,22 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fefce8;
-  --foreground: #1a2e1a;
-  --green-50: #f0fdf4;
-  --green-100: #dcfce7;
-  --green-200: #bbf7d0;
-  --green-300: #86efac;
-  --green-400: #4ade80;
-  --green-500: #22c55e;
-  --green-600: #16a34a;
-  --green-700: #15803d;
-  --green-800: #166534;
-  --green-900: #14532d;
-  --cream: #fefce8;
-  --cream-dark: #fef9c3;
-  --earth: #92400e;
-  --earth-light: #d97706;
+  --primary-bg: #f4f7ef;
+  --secondary-bg: #dbe7cf;
+  --heading-text: #6f5b45;
+  --muted-text: #8f806f;
+  --accent: #a6bc8a;
+  --background: var(--primary-bg);
+  --foreground: var(--heading-text);
+  --green-50: var(--primary-bg);
+  --green-100: var(--secondary-bg);
+  --green-200: var(--accent);
+  --green-300: var(--accent);
+  --green-400: var(--secondary-bg);
+  --green-500: var(--heading-text);
+  --green-600: var(--heading-text);
+  --green-700: var(--heading-text);
+  --green-800: var(--heading-text);
+  --green-900: var(--heading-text);
+  --cream: var(--primary-bg);
+  --cream-dark: var(--muted-text);
+  --earth: var(--heading-text);
+  --earth-light: var(--heading-text);
   --coral: #fb7185;
   --sky: #38bdf8;
 }
@@ -24,6 +29,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary-bg: var(--primary-bg);
+  --color-secondary-bg: var(--secondary-bg);
+  --color-heading-text: var(--heading-text);
+  --color-muted-text: var(--muted-text);
+  --color-accent: var(--accent);
   --color-green-50: var(--green-50);
   --color-green-100: var(--green-100);
   --color-green-200: var(--green-200);
@@ -48,6 +58,20 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--heading-text);
+}
+
+p,
+small {
+  color: var(--muted-text);
 }
 
 /* Scrollbar styling */

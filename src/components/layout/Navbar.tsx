@@ -13,12 +13,12 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-[100] bg-green-50/80 backdrop-blur-md border-b border-green-200">
+    <nav className="fixed inset-x-0 top-0 z-[100] bg-secondary-bg/95 backdrop-blur-md border-b border-accent/80">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2 group">
-            <LeafIcon className="w-6 h-6 text-green-600 group-hover:text-green-500 transition-colors" />
-            <span className="font-semibold text-green-800 text-lg">MetaboGarden</span>
+            <LeafIcon className="w-6 h-6 text-heading-text group-hover:text-earth transition-colors" />
+            <span className="font-semibold text-heading-text text-lg">MetaboGarden</span>
           </Link>
 
           <div className="flex items-center gap-1">
@@ -30,8 +30,8 @@ export default function Navbar() {
                   href={link.href}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-green-200 text-green-800'
-                      : 'text-green-700 hover:bg-green-100 hover:text-green-800'
+                      ? 'bg-accent text-heading-text border border-heading-text/25 shadow-sm'
+                      : 'text-heading-text/85 hover:text-heading-text hover:bg-secondary-bg/70'
                   }`}
                 >
                   {link.label}
