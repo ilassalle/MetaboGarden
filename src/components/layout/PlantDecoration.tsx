@@ -9,10 +9,8 @@ export function LeafIcon({ className = 'w-5 h-5' }: { className?: string }) {
       strokeLinejoin="round"
       className={className}
     >
-      <path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 20 .5 20 .5s-1.5 5-4.5 8.5" />
-      <path d="M11.7 13.2c-.6-.4-1.3-.5-2-.5" />
-      <path d="M12 20v-9.7" />
-      <path d="M4 22c2-4 6-8 12-12" />
+      <path d="M20 4c-6 0-11 5-11 11 0 3.3 2.7 6 6 6 6 0 11-5 11-11 0-3.3-2.7-6-6-6Z" transform="translate(-2 -2)" />
+      <path d="M8 16c3-3 5.5-5.5 10-10" />
     </svg>
   );
 }
