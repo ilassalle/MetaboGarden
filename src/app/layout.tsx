@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   title: 'MetaboGarden — MCAT Metabolic Pathways',
   description:
     'An interactive learning game to master glycolysis, TCA cycle, beta-oxidation, and all MCAT metabolic pathways.',
+  icons: {
+    icon: '/leaf-icon.svg',
+    shortcut: '/leaf-icon.svg',
+    apple: '/leaf-icon.svg',
+  },
 };
 
 export default function RootLayout({

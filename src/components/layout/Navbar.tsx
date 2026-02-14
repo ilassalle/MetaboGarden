@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LeafIcon } from './PlantDecoration';
+import Image from 'next/image';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -17,7 +17,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2 group">
-            <LeafIcon className="w-6 h-6 text-heading-text group-hover:text-earth transition-colors" />
+            <Image src="/leaf-icon.svg" alt="Leaf icon" width={24} height={24} className="w-6 h-6" priority />
             <span className="font-semibold text-heading-text text-lg">MetaboGarden</span>
           </Link>
 
