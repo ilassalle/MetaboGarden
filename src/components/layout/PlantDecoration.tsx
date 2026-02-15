@@ -24,17 +24,6 @@ export function SeedlingIcon({ className = 'w-5 h-5' }: { className?: string }) 
   );
 }
 
-export function VineCorner({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 100 100" className={`text-green-200 ${className}`} fill="none" stroke="currentColor" strokeWidth={1.5}>
-      <path d="M0 80 Q 20 80, 30 60 Q 40 40, 60 35 Q 80 30, 100 20" />
-      <ellipse cx="15" cy="72" rx="6" ry="4" fill="currentColor" opacity={0.5} transform="rotate(-30 15 72)" />
-      <ellipse cx="45" cy="42" rx="5" ry="3" fill="currentColor" opacity={0.4} transform="rotate(-15 45 42)" />
-      <ellipse cx="75" cy="28" rx="6" ry="4" fill="currentColor" opacity={0.3} transform="rotate(10 75 28)" />
-    </svg>
-  );
-}
-
 export function SmallLeaf({ className = '' }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" className={`text-green-300 ${className}`} fill="currentColor">

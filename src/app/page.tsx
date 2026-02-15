@@ -4,7 +4,6 @@ import { useSyncExternalStore } from 'react';
 import PathwayCard from '@/components/layout/PathwayCard';
 import { pathwayRegistry } from '@/data/pathway-registry';
 import { useProgressStore } from '@/lib/progress-store';
-import { VineCorner } from '@/components/layout/PlantDecoration';
 
 export default function Home() {
   const getPathwayMastery = useProgressStore((s) => s.getPathwayMastery);
@@ -24,9 +23,6 @@ export default function Home() {
 
   return (
     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12">
-      {/* Decorative corners */}
-      <VineCorner className="absolute bottom-0 left-0 w-32 h-32 opacity-30 pointer-events-none rotate-180" />
-
       {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-3xl sm:text-4xl font-bold text-green-900 mb-3">
