@@ -1,17 +1,15 @@
+import Image from 'next/image';
+
 export function LeafIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <Image
+      src="/leaf.png"
+      alt=""
+      aria-hidden="true"
+      width={20}
+      height={20}
       className={className}
-    >
-      <path d="M20 4c-6 0-11 5-11 11 0 3.3 2.7 6 6 6 6 0 11-5 11-11 0-3.3-2.7-6-6-6Z" transform="translate(-2 -2)" />
-      <path d="M8 16c3-3 5.5-5.5 10-10" />
-    </svg>
+    />
   );
 }
 

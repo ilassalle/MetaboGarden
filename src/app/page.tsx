@@ -1,5 +1,6 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import PathwayCard from '@/components/layout/PathwayCard';
 import { pathwayRegistry } from '@/data/pathway-registry';
 import { useProgressStore } from '@/lib/progress-store';
@@ -8,6 +9,18 @@ import { VineCorner } from '@/components/layout/PlantDecoration';
 export default function Home() {
   const getPathwayMastery = useProgressStore((s) => s.getPathwayMastery);
   const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
+  const isHydrated = useSyncExternalStore(
+    (onStoreChange) => {
+      const unsubHydrate = useProgressStore.persist.onHydrate(onStoreChange);
+      const unsubFinishHydration = useProgressStore.persist.onFinishHydration(onStoreChange);
+      return () => {
+        unsubHydrate();
+        unsubFinishHydration();
+      };
+    },
+    () => useProgressStore.persist.hasHydrated(),
+    () => false
+  );
 
   return (
     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12">
@@ -29,12 +42,12 @@ export default function Home() {
       {/* Pathway grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {pathwayRegistry.map((pathway) => {
-          const unlocked = isPathwayUnlocked(pathway.id);
+          const unlocked = isHydrated ? isPathwayUnlocked(pathway.id) : false;
           return (
             <PathwayCard
               key={pathway.id}
               pathway={pathway}
-              mastery={unlocked ? getPathwayMastery(pathway.id) : 0}
+              mastery={isHydrated && unlocked ? getPathwayMastery(pathway.id) : 0}
               locked={!unlocked}
             />
           );
