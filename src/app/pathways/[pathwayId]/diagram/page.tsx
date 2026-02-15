@@ -23,14 +23,37 @@ export default function DiagramPage({
   if (!meta) notFound();
 
   const typedPathwayId = pathwayId as PathwayId;
-  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
-  const isDiagramUnlocked = useProgressStore((s) => s.isDiagramUnlocked);
   const unlockDiagram = useProgressStore((s) => s.unlockDiagram);
-
-  const pathwayUnlocked = isPathwayUnlocked(typedPathwayId);
-  const diagramUnlocked = isDiagramUnlocked(typedPathwayId);
+  const updateGameProgress = useProgressStore((s) => s.updateGameProgress);
+  const pathwayUnlocked = useProgressStore((s) =>
+    s.progress.unlockedPathways.includes(typedPathwayId)
+  );
+  const diagramUnlocked = useProgressStore((s) =>
+    s.progress.diagramUnlockedPathways.includes(typedPathwayId)
+  );
+  const diagramCompleted = useProgressStore((s) =>
+    Boolean(
+      s.progress.gameProgress.find(
+        (entry) => entry.pathwayId === typedPathwayId && entry.gameMode === 'diagram'
+      )?.completedAt
+    )
+  );
 
   const { pathway, loading, error } = usePathwayData(typedPathwayId);
+
+  const handleDiagramComplete = () => {
+    if (diagramCompleted) return;
+
+    updateGameProgress({
+      pathwayId: typedPathwayId,
+      gameMode: 'diagram',
+      score: 100,
+      bestScore: 100,
+      attempts: 1,
+      timeSpentSeconds: 0,
+      completedAt: new Date().toISOString(),
+    });
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -83,7 +106,14 @@ export default function DiagramPage({
         </div>
       )}
 
-      {diagramUnlocked && pathway && <InteractiveDiagram pathway={pathway} />}
+      {diagramUnlocked && pathway && (
+        <InteractiveDiagram
+          key={pathway.id}
+          pathway={pathway}
+          completed={diagramCompleted}
+          onComplete={handleDiagramComplete}
+        />
+      )}
     </div>
   );
 }

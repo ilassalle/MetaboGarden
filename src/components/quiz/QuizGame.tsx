@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { PathwayId } from '@/data/types';
 import { quizQuestions } from '@/data/quiz-questions';
 import { shuffle } from '@/lib/shuffle';
+import { useProgressStore } from '@/lib/progress-store';
 import MultipleChoice from './MultipleChoice';
 import FillInBlank from './FillInBlank';
 import Flashcard from './Flashcard';
@@ -17,6 +18,7 @@ interface QuizGameProps {
 type Mode = 'quiz' | 'flashcard';
 
 export default function QuizGame({ pathwayId }: QuizGameProps) {
+  const updateGameProgress = useProgressStore((s) => s.updateGameProgress);
   const questions = useMemo(
     () => shuffle(quizQuestions.filter((q) => q.pathwayId === pathwayId)),
     [pathwayId],
@@ -66,6 +68,16 @@ export default function QuizGame({ pathwayId }: QuizGameProps) {
 
   function handleNext() {
     if (currentIndex + 1 >= total) {
+      const finalScore = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+      updateGameProgress({
+        pathwayId,
+        gameMode: 'quiz',
+        score: finalScore,
+        bestScore: finalScore,
+        attempts: 1,
+        timeSpentSeconds: 0,
+        completedAt: new Date().toISOString(),
+      });
       setFinished(true);
     } else {
       setCurrentIndex((i) => i + 1);

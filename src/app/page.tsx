@@ -7,7 +7,7 @@ import { useProgressStore } from '@/lib/progress-store';
 
 export default function Home() {
   const getPathwayMastery = useProgressStore((s) => s.getPathwayMastery);
-  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
+  const progress = useProgressStore((s) => s.progress);
   const isHydrated = useSyncExternalStore(
     (onStoreChange) => {
       const unsubHydrate = useProgressStore.persist.onHydrate(onStoreChange);
@@ -37,12 +37,13 @@ export default function Home() {
       {/* Pathway grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {pathwayRegistry.map((pathway) => {
-          const unlocked = isHydrated ? isPathwayUnlocked(pathway.id) : false;
+          const unlocked = isHydrated ? progress.unlockedPathways.includes(pathway.id) : false;
+          const mastery = isHydrated && unlocked ? getPathwayMastery(pathway.id) : 0;
           return (
             <PathwayCard
               key={pathway.id}
               pathway={pathway}
-              mastery={isHydrated && unlocked ? getPathwayMastery(pathway.id) : 0}
+              mastery={mastery}
               locked={!unlocked}
             />
           );

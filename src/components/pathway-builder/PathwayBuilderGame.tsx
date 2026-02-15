@@ -6,6 +6,7 @@ import type { Pathway } from '@/data/types';
 import type { SlotAssignment, ValidationResult } from '@/lib/game-engine';
 import { validatePathway } from '@/lib/game-engine';
 import { shuffle } from '@/lib/shuffle';
+import { useProgressStore } from '@/lib/progress-store';
 import ItemBank from './ItemBank';
 import type { BankItem } from './ItemBank';
 import DropZone from './DropZone';
@@ -99,6 +100,7 @@ interface PathwayBuilderGameProps {
 }
 
 export default function PathwayBuilderGame({ pathway }: PathwayBuilderGameProps) {
+  const updateGameProgress = useProgressStore((s) => s.updateGameProgress);
   // --- Shuffled bank items (stable for the session, re-shuffled on reset) ---
   const [bankItems, setBankItems] = useState<BankItem[]>(() => shuffle(buildBankItems(pathway)));
 
@@ -211,7 +213,16 @@ export default function PathwayBuilderGame({ pathway }: PathwayBuilderGameProps)
     setScore(computedScore);
     setSubmitted(true);
     setShowFeedback(true);
-  }, [assignments, pathway.steps]);
+    updateGameProgress({
+      pathwayId: pathway.id,
+      gameMode: 'pathway-builder',
+      score: computedScore,
+      bestScore: computedScore,
+      attempts: 1,
+      timeSpentSeconds: 0,
+      completedAt: new Date().toISOString(),
+    });
+  }, [assignments, pathway.id, pathway.steps, updateGameProgress]);
 
   // --- Reset ---
   const handleReset = useCallback(() => {

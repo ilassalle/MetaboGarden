@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import type { Pathway } from '@/data/types';
 import StepNode from './StepNode';
@@ -9,10 +9,18 @@ import StepDetailPanel from './StepDetailPanel';
 
 interface InteractiveDiagramProps {
   pathway: Pathway;
+  completed?: boolean;
+  onComplete?: () => void;
 }
 
-export default function InteractiveDiagram({ pathway }: InteractiveDiagramProps) {
+export default function InteractiveDiagram({
+  pathway,
+  completed = false,
+  onComplete,
+}: InteractiveDiagramProps) {
   const [selectedStep, setSelectedStep] = useState<number | null>(null);
+  const [visitedStepNumbers, setVisitedStepNumbers] = useState<Set<number>>(new Set());
+  const completionTriggeredRef = useRef(false);
 
   const { steps, energySummary } = pathway;
 
@@ -21,11 +29,25 @@ export default function InteractiveDiagram({ pathway }: InteractiveDiagramProps)
     ? steps.findIndex((s) => s.stepNumber === selectedStep)
     : -1;
 
+  useEffect(() => {
+    completionTriggeredRef.current = false;
+  }, [pathway.id]);
+
+  const markStepVisited = useCallback((stepNumber: number) => {
+    setVisitedStepNumbers((prev) => {
+      if (prev.has(stepNumber)) return prev;
+      const next = new Set(prev);
+      next.add(stepNumber);
+      return next;
+    });
+  }, []);
+
   const handleStepClick = useCallback(
     (stepNumber: number) => {
+      markStepVisited(stepNumber);
       setSelectedStep((prev) => (prev === stepNumber ? null : stepNumber));
     },
-    [],
+    [markStepVisited],
   );
 
   const handleClosePanel = useCallback(() => {
@@ -34,26 +56,43 @@ export default function InteractiveDiagram({ pathway }: InteractiveDiagramProps)
 
   const goToPrev = useCallback(() => {
     if (currentIndex > 0) {
-      setSelectedStep(steps[currentIndex - 1].stepNumber);
+      const stepNumber = steps[currentIndex - 1].stepNumber;
+      markStepVisited(stepNumber);
+      setSelectedStep(stepNumber);
     }
-  }, [currentIndex, steps]);
+  }, [currentIndex, markStepVisited, steps]);
 
   const goToNext = useCallback(() => {
     if (currentIndex < steps.length - 1) {
-      setSelectedStep(steps[currentIndex + 1].stepNumber);
+      const stepNumber = steps[currentIndex + 1].stepNumber;
+      markStepVisited(stepNumber);
+      setSelectedStep(stepNumber);
     } else {
       // At last step, close panel
       setSelectedStep(null);
     }
-  }, [currentIndex, steps]);
+  }, [currentIndex, markStepVisited, steps]);
 
   const handleStartWalkthrough = useCallback(() => {
-    setSelectedStep(steps[0].stepNumber);
-  }, [steps]);
+    if (steps.length === 0) return;
+    const stepNumber = steps[0].stepNumber;
+    markStepVisited(stepNumber);
+    setSelectedStep(stepNumber);
+  }, [markStepVisited, steps]);
 
   const selectedStepData = selectedStep !== null
     ? steps.find((s) => s.stepNumber === selectedStep) ?? null
     : null;
+
+  useEffect(() => {
+    if (!onComplete || completed || completionTriggeredRef.current) return;
+    if (steps.length === 0) return;
+
+    if (visitedStepNumbers.size >= steps.length) {
+      completionTriggeredRef.current = true;
+      onComplete();
+    }
+  }, [completed, onComplete, steps.length, visitedStepNumbers.size]);
 
   return (
     <div className="relative">
@@ -68,12 +107,19 @@ export default function InteractiveDiagram({ pathway }: InteractiveDiagramProps)
 
       {/* ---- Walk-through button ---- */}
       <div className="flex justify-center mb-6">
-        <button
-          onClick={handleStartWalkthrough}
-          className="px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer bg-green-100 text-green-700 hover:bg-green-200"
-        >
-          Step Through Pathway
-        </button>
+        <div className="text-center">
+          <button
+            onClick={handleStartWalkthrough}
+            className="px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer bg-green-100 text-green-700 hover:bg-green-200"
+          >
+            Step Through Pathway
+          </button>
+          <p className="mt-2 text-xs text-green-600/80">
+            {completed
+              ? 'Diagram complete'
+              : `${visitedStepNumbers.size} / ${steps.length} steps reviewed`}
+          </p>
+        </div>
       </div>
 
       {/* ---- Step list ---- */}

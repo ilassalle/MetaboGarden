@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { PathwayId, MatchPair } from '@/data/types';
 import { matchingSets } from '@/data/matching-sets';
 import { shuffle } from '@/lib/shuffle';
+import { scoreMatching } from '@/lib/game-engine';
+import { useProgressStore } from '@/lib/progress-store';
 import MatchCard from './MatchCard';
 import MatchFeedback from './MatchFeedback';
 
@@ -13,6 +15,7 @@ interface MatchingGameProps {
 }
 
 export default function MatchingGame({ pathwayId }: MatchingGameProps) {
+  const updateGameProgress = useProgressStore((s) => s.updateGameProgress);
   const pairs = useMemo(
     () => matchingSets.filter((p) => p.pathwayId === pathwayId),
     [pathwayId],
@@ -71,6 +74,16 @@ export default function MatchingGame({ pathwayId }: MatchingGameProps) {
       setIncorrectId(null);
 
       if (next.size === pairs.length) {
+        const finalScore = scoreMatching(pairs.length, next.size, incorrectAttempts);
+        updateGameProgress({
+          pathwayId,
+          gameMode: 'matching',
+          score: finalScore,
+          bestScore: finalScore,
+          attempts: 1,
+          timeSpentSeconds: 0,
+          completedAt: new Date().toISOString(),
+        });
         setFinished(true);
       }
     } else {

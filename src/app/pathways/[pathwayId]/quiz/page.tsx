@@ -22,10 +22,13 @@ export default function QuizPage({
   if (!meta) notFound();
 
   const typedPathwayId = pathwayId as PathwayId;
-  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
-  const isDiagramUnlocked = useProgressStore((s) => s.isDiagramUnlocked);
-  const pathwayUnlocked = isPathwayUnlocked(typedPathwayId);
-  const unlocked = pathwayUnlocked && isDiagramUnlocked(typedPathwayId);
+  const pathwayUnlocked = useProgressStore((s) =>
+    s.progress.unlockedPathways.includes(typedPathwayId)
+  );
+  const diagramUnlocked = useProgressStore((s) =>
+    s.progress.diagramUnlockedPathways.includes(typedPathwayId)
+  );
+  const unlocked = pathwayUnlocked && diagramUnlocked;
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">

@@ -23,10 +23,13 @@ export default function PathwayBuilderPage({
   if (!meta) notFound();
 
   const typedPathwayId = pathwayId as PathwayId;
-  const isPathwayUnlocked = useProgressStore((s) => s.isPathwayUnlocked);
-  const isDiagramUnlocked = useProgressStore((s) => s.isDiagramUnlocked);
-  const pathwayUnlocked = isPathwayUnlocked(typedPathwayId);
-  const unlocked = pathwayUnlocked && isDiagramUnlocked(typedPathwayId);
+  const pathwayUnlocked = useProgressStore((s) =>
+    s.progress.unlockedPathways.includes(typedPathwayId)
+  );
+  const diagramUnlocked = useProgressStore((s) =>
+    s.progress.diagramUnlockedPathways.includes(typedPathwayId)
+  );
+  const unlocked = pathwayUnlocked && diagramUnlocked;
 
   const { pathway, loading, error } = usePathwayData(pathwayId as PathwayId);
 
