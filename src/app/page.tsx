@@ -25,7 +25,6 @@ export default function Home() {
   return (
     <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12">
       {/* Decorative corners */}
-      <VineCorner className="absolute top-0 right-0 w-32 h-32 opacity-40 pointer-events-none" />
       <VineCorner className="absolute bottom-0 left-0 w-32 h-32 opacity-30 pointer-events-none rotate-180" />
 
       {/* Header */}
